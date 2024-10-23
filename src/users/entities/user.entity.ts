@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 import { Post } from "src/posts/entities/post.entity";
 import { Follow } from "src/follows/entities/follow.entity";
 import { Like } from "src/likes/entities/like.entity";
+import { Comment } from "src/comments/entities/comment.entity";
 
 @Entity()
 export class User {
@@ -55,4 +56,7 @@ export class User {
 
     @OneToMany(() => Like, like => like.user)
     likes: Like[];
+
+    @OneToMany(() => Comment, comment => comment.author)
+    comments: Comment[];
 }
