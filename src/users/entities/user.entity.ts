@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Post } from "src/posts/entities/post.entity";
 import { Follow } from "src/follows/entities/follow.entity";
+import { Like } from "src/likes/entities/like.entity";
 
 @Entity()
 export class User {
@@ -51,4 +52,7 @@ export class User {
 
     @OneToMany(() => Follow, follow => follow.following)
     followers: Follow[];
+
+    @OneToMany(() => Like, like => like.user)
+    likes: Like[];
 }

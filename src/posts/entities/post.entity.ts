@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Like } from 'src/likes/entities/like.entity';
 
 @Entity()
 export class Post {
@@ -23,4 +24,7 @@ export class Post {
 
   @Column({ default: false })
   isPublished: boolean;
+
+  @OneToMany(() => Like, like => like.post)
+  likes: Like[];
 }
