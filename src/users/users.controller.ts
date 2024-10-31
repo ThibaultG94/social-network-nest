@@ -8,7 +8,8 @@ import {
   Delete,
   HttpStatus,
   HttpException,
-  ParseIntPipe
+  ParseIntPipe,
+  ParseUUIDPipe
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -36,7 +37,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: string) {
     const user = await this.usersService.findOne(id);
     if (!user) {
       throw new HttpException('Utilisateur non trouvé', HttpStatus.NOT_FOUND);
@@ -46,7 +47,7 @@ export class UsersController {
 
   @Patch(':id')
   async update(
-    @Param('id', ParseIntPipe) id: number, 
+    @Param('id', ParseIntPipe) id: string, 
     @Body() updateUserDto: UpdateUserDto
   ) {
     try {
@@ -64,11 +65,8 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    const result = await this.usersService.remove(id);
-    if (!result) {
-      throw new HttpException('Utilisateur non trouvé', HttpStatus.NOT_FOUND);
-    }
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    await this.usersService.remove(id);
     return {
       statusCode: HttpStatus.OK,
       message: 'Utilisateur supprimé avec succès'
