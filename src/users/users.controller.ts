@@ -7,8 +7,6 @@ import {
   Param, 
   Delete,
   HttpStatus,
-  HttpException,
-  ParseIntPipe,
   ParseUUIDPipe
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -21,14 +19,7 @@ export class UsersController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    try {
-      return await this.usersService.create(createUserDto);
-    } catch (error) {
-      throw new HttpException(
-        'Erreur lors de la création de l\'utilisateur',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    return await this.usersService.create(createUserDto);
   }
 
   @Get()
@@ -37,31 +28,16 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: string) {
-    const user = await this.usersService.findOne(id);
-    if (!user) {
-      throw new HttpException('Utilisateur non trouvé', HttpStatus.NOT_FOUND);
-    }
-    return user;
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.usersService.findOne(id);
   }
 
   @Patch(':id')
   async update(
-    @Param('id', ParseIntPipe) id: string, 
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    try {
-      const updatedUser = await this.usersService.update(id, updateUserDto);
-      if (!updatedUser) {
-        throw new HttpException('Utilisateur non trouvé', HttpStatus.NOT_FOUND);
-      }
-      return updatedUser;
-    } catch (error) {
-      throw new HttpException(
-        'Erreur lors de la mise à jour de l\'utilisateur',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    return await this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
