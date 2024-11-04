@@ -103,6 +103,37 @@ export class UsersService {
     }
   }
 
+  async findOneByEmail(email: string): Promise<Omit<User, 'password'>> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { email },
+        select: [
+          'id', 
+          'username', 
+          'email', 
+          'bio', 
+          'isVerified',
+          'role',
+          'profilePicture',
+          'dateOfBirth',
+          'createdAt',
+          'updatedAt',
+          'isActive',
+          'lastLogin'
+        ]
+      });
+
+      if (!user) {
+        throw new NotFoundException(`Utilisateur avec l'email ${email} non trouvé`);
+      }
+
+      return user;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Erreur lors de la récupération de l\'utilisateur');
+    }
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
     try {
       // Vérifier si l'utilisateur existe
@@ -186,5 +217,11 @@ export class UsersService {
     }
 
     return null;
+  }
+
+  async updateLastLogin(userId: string): Promise<void> {
+    await this.userRepository.update(userId, {
+      lastLogin: new Date()
+    });
   }
 }
