@@ -1,34 +1,66 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Delete, 
+  Param, 
+  Body, 
+  UseGuards, 
+  Req,
+  ParseUUIDPipe 
+} from '@nestjs/common';
 import { LikesService } from './likes.service';
 import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 
 @Controller('likes')
+@UseGuards(JwtAuthGuard)
 export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
   @Post()
-  create(@Body() createLikeDto: CreateLikeDto) {
-    return this.likesService.create(createLikeDto);
+  async create(@Req() req: RequestWithUser, @Body() createLikeDto: CreateLikeDto) {
+    return await this.likesService.create(req.user.sub, createLikeDto);
   }
 
-  @Get()
-  findAll() {
-    return this.likesService.findAll();
+  @Delete(':postId')
+  async remove(
+    @Req() req: RequestWithUser,
+    @Param('postId', ParseUUIDPipe) postId: string,
+  ) {
+    return await this.likesService.remove(req.user.sub, postId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.likesService.findOne(+id);
+  @Get('check/:postId')
+  async hasLiked(
+    @Req() req: RequestWithUser,
+    @Param('postId', ParseUUIDPipe) postId: string,
+  ) {
+    return {
+      hasLiked: await this.likesService.hasLiked(req.user.sub, postId),
+    };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLikeDto: UpdateLikeDto) {
-    return this.likesService.update(+id, updateLikeDto);
+  @Get('post/:postId')
+  async getPostLikes(@Param('postId', ParseUUIDPipe) postId: string) {
+    return await this.likesService.getPostLikes(postId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.likesService.remove(+id);
+  @Get('post/:postId/count')
+  async getLikeCount(@Param('postId', ParseUUIDPipe) postId: string) {
+    return {
+      count: await this.likesService.getLikeCount(postId),
+    };
+  }
+
+  @Get('user/me')
+  async getMyLikes(@Req() req: RequestWithUser) {
+    return await this.likesService.getUserLikes(req.user.sub);
+  }
+
+  @Get('user/:userId')
+  async getUserLikes(@Param('userId', ParseUUIDPipe) userId: string) {
+    return await this.likesService.getUserLikes(userId);
   }
 }
