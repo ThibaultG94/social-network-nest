@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { Like } from 'src/likes/entities/like.entity';
+import { User } from '../../users/entities/user.entity';
+import { Like } from '../../likes/entities/like.entity';
 
 @Entity()
 export class Post {
@@ -14,7 +14,7 @@ export class Post {
   author: User;
 
   @ManyToOne(() => Post, post => post.replies, { nullable: true })
-  parentPost: Post;
+  parentPost: Post | null;
 
   @OneToMany(() => Post, post => post.parentPost)
   replies: Post[];
@@ -31,6 +31,12 @@ export class Post {
   @OneToMany(() => Like, like => like.post)
   likes: Like[];
 
+  @Column('simple-array', { nullable: true })
+  hashtags: string[];
+
   @Column({ default: 'original' })
   type: string;
+
+  @ManyToOne(() => Post, { nullable: true })
+  originalPost: Post | null;
 }

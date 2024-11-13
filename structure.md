@@ -79,6 +79,8 @@ social-network-nest/
 │   │   ├── dto/
 │   │   │   ├── create-post.dto.ts
 │   │   │   └── update-post.dto.ts
+│   │   ├── interfaces/
+│   │   │   └── post-search-response.interface.ts
 │   │   ├── entities/
 │   │   │   └── post.entity.ts
 │   │   ├── posts.controller.spec.ts
